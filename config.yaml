@@ -1,0 +1,56 @@
+# Global Settings
+project_name: "DataCore Board Assessment"
+user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# Data Paths
+paths:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  final_dir: "data/final"
+  cafef_output: "data/raw/cafef_board.parquet"
+
+# Scraper Settings
+scraping:
+  delay_seconds: 2.0
+  timeout: 20
+  retries: 3
+  test_mode: false       # Set to true to limit requests for testing
+  test_limit: 5         # Number of tickers to scrape in test mode
+
+# Ticker Configuration (Total: 30 tickers)
+tickers:
+  # HOSE
+  - { symbol: "FPT", exchange: "HOSE" }
+  - { symbol: "VNM", exchange: "HOSE" }
+  - { symbol: "VCB", exchange: "HOSE" }
+  - { symbol: "HPG", exchange: "HOSE" }
+  - { symbol: "MWG", exchange: "HOSE" }
+  - { symbol: "SSI", exchange: "HOSE" }
+  - { symbol: "VIC", exchange: "HOSE" }
+  - { symbol: "VHM", exchange: "HOSE" }
+  - { symbol: "GAS", exchange: "HOSE" }
+  - { symbol: "BID", exchange: "HOSE" }
+  - { symbol: "CTG", exchange: "HOSE" }
+  - { symbol: "MBB", exchange: "HOSE" }
+  - { symbol: "PNJ", exchange: "HOSE" }
+  - { symbol: "REE", exchange: "HOSE" }
+  - { symbol: "SAB", exchange: "HOSE" }
+
+  # HNX
+  - { symbol: "SHS", exchange: "HNX" }
+  - { symbol: "PVS", exchange: "HNX" }
+  - { symbol: "NVB", exchange: "HNX" }
+  - { symbol: "IDC", exchange: "HNX" }
+  - { symbol: "THD", exchange: "HNX" }
+  - { symbol: "CEO", exchange: "HNX" }
+  - { symbol: "BVS", exchange: "HNX" }
+  - { symbol: "TNG", exchange: "HNX" }
+  - { symbol: "VCS", exchange: "HNX" }
+  - { symbol: "PLC", exchange: "HNX" }
+
+  # UPCOM
+  - { symbol: "ACV", exchange: "UPCOM" }
+  - { symbol: "VGI", exchange: "UPCOM" }
+  - { symbol: "BSR", exchange: "UPCOM" }
+  - { symbol: "FOX", exchange: "UPCOM" }
+  - { symbol: "MCH", exchange: "UPCOM" }

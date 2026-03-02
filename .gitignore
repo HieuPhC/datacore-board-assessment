@@ -1,0 +1,4 @@
+.venv
+.gitattributes
+src/__pycache__
+test.py
