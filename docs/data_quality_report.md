@@ -1,30 +1,23 @@
-# Data Quality Report
+# Data Quality Report - Board of Directors Merger
 
-## 1. Overview
-* **Total Golden Records:** [Total Count]
-* **CafeF Match Count:** 591
-* **Vietstock Match Count:** [Count from Task 2]
-* **Cross-Source Match Rate:** [Percentage]%
+## 1. Executive Summary
+- **Total Unique Entities**: 530
+- **Overall Match Rate**: 77.36%
+- **Weighted Confidence Score**: 0.87
 
-## 2. Source Agreement Analysis
-| Agreement Type | Count | Percentage |
-| :--- | :--- | :--- |
-| **Both Sources** | [Count] | [XX]% |
-| **CafeF Only** | [Count] | [XX]% |
-| **Vietstock Only** | [Count] | [XX]% |
+## 2. Source Distribution
+| Category | Count | Description |
+| :--- | :---: | :--- |
+| Both (Agreed) | 307 | Full consensus on name and role. |
+| Both (Conflict) | 103 | Matched on identity; role resolved via Vietstock preference. |
+| CafeF Only | 97 | Primarily Executive Managers not listed on board pages. |
+| Vietstock Only | 23 | Board members missing from CafeF's API. |
 
-## 3. Technical Challenges & Observations
+## 3. Conflict Resolution Strategy
+- **Identity Matching**: Used a "Slugified Join Key" (lowercase, no accents, no spaces) to bypass diacritic and honorific variations.
+- **Role Preference**: Preferred **Vietstock** for role titles as it provides higher granularity for Board of Director classifications (e.g., distinguishing between Supervisory Board and Executive Management).
+- **Independence**: Applied a logical OR (max); if either source flagged a member as independent, the Golden record reflects this.
 
-### Vietstock Anti-Bot Measures
-During Task 2, the scraper encountered aggressive IP-based rate limiting from `finance.vietstock.vn`. 
-* **Codec Errors:** Observed `latin-1` encoding failures. This was diagnosed as the server sending non-ASCII characters in the `__RequestVerificationToken` to crash standard automated HTTP clients.
-* **Mitigation:** Implemented per-ticker session rotation and byte-level header handling. A cooling-down period was required to reset the IP reputation.
-
-### Conflict Resolution Strategy
-* **Precedence:** When sources disagreed on a role title, **Vietstock** was prioritized due to its higher granularity and alignment with official corporate filings.
-* **Deduplication:** Join keys were constructed using `ticker` + `normalized_name` (lowercase, no honorifics) to ensure "Ông Nguyễn Văn A" (CafeF) matched "Nguyễn Văn A" (Vietstock).
-
-## 4. Confidence Score Distribution
-* **1.0 (High):** Matches found in both sources with identical roles.
-* **0.8 (Medium-High):** Matches found in both sources but with slight role title variations.
-* **0.6 (Medium):** Records found in only one source.
+## 4. Observed Patterns
+- **Honorifics**: 100% of honorifics (Ông, Bà, etc.) were successfully stripped from display names.
+- **Enrichment**: Vietstock successfully enriched 81.7% of the total dataset with Year of Birth and Education data.
