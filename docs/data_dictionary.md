@@ -19,24 +19,30 @@ This document describes the schema and data logic for the `board_golden.parquet`
 
 ## 🛠 Field Logic & Caveats
 
-### 1. `person_name`
-* **Normalization:** Names are normalized to **Unicode NFC** format to ensure consistent character representation.
-* **Cleaning:** Aggressive Regex stripping is applied to remove prefixes (Ông, Bà, TS, etc.) including those with non-breaking spaces (`\xa0`).
-* **Join Logic:** A hidden `join_key` (slugified, accent-free, space-free) is used to bridge spelling variations (e.g., "Nguyễn" vs "Nguyen") across sources.
+### 1. `person_name` & Identity Matching
+* **Normalization:** All strings are converted to **Unicode NFC**.
+* **Requirement 3a Handling:** To bridge variations (e.g., "Nguyễn" vs "Nguyen"), the system generates a temporary **Accent-free Slug** (lowercase, no spaces, no diacritics) for the merge operation.
+* **Selection:** If both sources exist, the script selects the **longest string** as the display name to ensure accented Vietnamese characters are preserved over flat Latin text.
 
-### 2. `role`
-* **Standardization:** Raw strings are mapped to a "Golden Standard" using a dictionary. Multi-part roles (e.g., "KTT kiêm Phó TGĐ") are split, mapped, deduplicated, and sorted alphabetically to ensure `A / B` matches `B / A`.
-* **Resolution:** In cases of conflict, **Vietstock** is used as the tie-breaker for the final display role due to its higher granularity for board-level data.
+### 2. `role` (Multi-Hat Aggregation)
+* **Aggregation:** During the Silver phase, individuals holding multiple seats in one company have their roles combined. 
+* **Standardization:** Roles are deduplicated and sorted alphabetically. This ensures that a "Chairman / CEO" listing in CafeF matches a "CEO / Chairman" listing in Vietstock.
+* **Resolution (3b):** If sources disagree on the role, the **Vietstock** version is prioritized for the final output.
 
 ### 3. `is_independent`
-* **Logic:** Extracted from the `role` field in CafeF and the `tenure` field in Vietstock. If *either* source flags a member as independent, the Golden record returns `True`.
+* **Conflict Logic:** This field is subject to the `conflict` flag. If CafeF lists a member as independent but Vietstock does not, the record is marked as `conflict` and **Vietstock's status takes priority**.
 
-### 4. `source_agreement`
-* `both`: Record exists in both sources and standardized roles are identical.
-* `conflict`: Record exists in both sources but roles differ (resolved via Vietstock preference).
-* `cafef_only` / `vietstock_only`: Record exists in only one source.
+### 4. `source_agreement` & `confidence_score`
+The pipeline assigns these based on the **Full Outer Join** results:
 
-### 5. `confidence_score`
-* **1.0 (High):** Data is cross-verified and identical across both sources.
-* **0.8 (Medium-High):** Sources match on identity, but a conflict in roles was resolved using the priority strategy.
-* **0.6 (Medium):** Data exists in only one source; veracity cannot be cross-verified.
+| Agreement | Criteria | Score |
+| :--- | :--- | :--- |
+| **both** | Identity matched AND shared attributes (**Role**, **Independence**) match perfectly. | **1.0** |
+| **conflict** | Identity matched via slug, but **Role** or **Independence** differ. | **0.8** |
+| **vietstock_only**| Record only found in Vietstock. | **0.6** |
+| **cafef_only** | Record only found in CafeF. | **0.6** |
+
+
+
+### 5. Enriched Fields (Vietstock Priority)
+Fields like `year_of_birth`, `education`, `tenure`, and `shares` are mapped directly from the Vietstock source. If a record is `cafef_only`, these fields will naturally be `NaN`.

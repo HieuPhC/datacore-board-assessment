@@ -110,7 +110,7 @@ To demonstrate the pipeline's robustness, the system scrapes data for 30 tickers
 
         * Name: Heuristically selects the most complete version (typically the one with accents).
 
-        * Attributes: Prioritizes Vietstock for all attributes (Role, Independence, and Enriched Fields) due to higher update frequency.
+        * Attributes: Prioritizes Vietstock for all attributes (Role, Independence, and Enriched Fields) due to better data availability.
 
     * Strict Conflict Resolution (Requirement 3b):
 
