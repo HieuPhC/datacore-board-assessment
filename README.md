@@ -110,7 +110,7 @@ To demonstrate the pipeline's robustness, the system scrapes data for 30 tickers
 
         * Name: Heuristically selects the most complete version (typically the one with accents).
 
-        * Attributes: Prioritizes Vietstock for all attributes (Role, Independence, and Enriched Fields) due to better data availability.
+        * Attributes: Prioritizes Vietstock for all attributes (Role, Independence, and Enriched Fields) due to higher data quality.
 
     * Strict Conflict Resolution (Requirement 3b):
 
@@ -124,16 +124,18 @@ To demonstrate the pipeline's robustness, the system scrapes data for 30 tickers
 
             * `0.6` (single_source): Record present in only one source; cross-validation not possible.
 
-## Known Challenges
+## Known Limitations
 
-* Silent Data Mismatches: Because the pipeline defaults to Vietstock Priority, if CafeF has more recent data (e.g., a very recent resignation), it will be overwritten by outdated Vietstock records without a freshness check.
+* ***Silent Data Mismatches***: Because the pipeline defaults to Vietstock Priority, if CafeF has more recent data (e.g., a very recent resignation), it will be overwritten by outdated Vietstock records without a freshness check.
 
-* Positional Fragility (Vietstock): The scraper relies on fixed column indices. If Vietstock reorders their table (e.g., swapping "Tenure" and "Shares"), data will be mapped to incorrect fields silently.
+* ***Positional Fragility (Vietstock)***: The scraper relies on fixed column indices. If Vietstock reorders their table (e.g., swapping "Tenure" and "Shares"), data will be mapped to incorrect fields silently.
 
-* Heuristic Independence: Detection is strictly keyword-based ("độc lập"). Terminology variations or typos in the source data will lead to false negatives for board independence status.
+* ***Heuristic Independence***: Detection is strictly keyword-based ("độc lập"). Terminology variations or typos in the source data will lead to false negatives for board independence status.
 
-* API Response Ghosting (CafeF): The internal CafeF endpoint occasionally returns empty Data arrays even for valid tickers. The scraper retries up to 3 times, but some tickers may still fail to return data during peak server load.
+* ***API Response Ghosting (CafeF)***: The internal CafeF endpoint occasionally returns empty Data arrays even for valid tickers. The scraper retries up to 3 times, but some tickers may still fail to return data during peak server load.
 
-* Internal Path Volatility: Both scrapers rely on undocumented internal endpoints/classes. A "silent break" (e.g., CafeF changing ListCeo.ashx to a new path) will render the source inaccessible until the code is manually updated.
+* ***Internal Path Volatility***: Both scrapers rely on undocumented internal endpoints/classes. A "silent break" (e.g., CafeF changing ListCeo.ashx to a new path) will render the source inaccessible until the code is manually updated.
 
-* Name Collisions: In rare cases where a person has the same name and ticker but different identities, the pipeline will erroneously merge them into a single record.
+* ***Name Collisions***: In rare cases where a person has the same name and ticker but different identities, the pipeline will erroneously merge them into a single record.
+
+* ***Role Semantic Mismatches***: Because sources use different naming conventions (e.g., "Chủ tịch" vs. "Chủ tịch HĐQT"), the pipeline may flag a "conflict" even when both sources are technically correct. While our standardization logic minimizes this, highly unique or non-standard titles may still result in lower confidence scores.
